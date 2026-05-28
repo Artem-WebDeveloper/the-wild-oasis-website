@@ -1,10 +1,19 @@
+import { notFound } from "next/navigation";
 import { eachDayOfInterval } from "date-fns";
 import { supabase } from "./supabase";
+import {
+  BookingSchema,
+  CabinDetailSchema,
+  CabinPriceSchema,
+  CabinSchema,
+  GuestSchema,
+} from "./schemas";
+import z from "zod";
 
 /////////////
 // GET
 
-export async function getCabin(id) {
+export async function getCabin(id: number) {
   const { data, error } = await supabase
     .from("cabins")
     .select("*")
@@ -16,12 +25,13 @@ export async function getCabin(id) {
 
   if (error) {
     console.error(error);
+    notFound();
   }
 
-  return data;
+  return CabinDetailSchema.parse(data);
 }
 
-export async function getCabinPrice(id) {
+export async function getCabinPrice(id: number) {
   const { data, error } = await supabase
     .from("cabins")
     .select("regularPrice, discount")
@@ -32,7 +42,7 @@ export async function getCabinPrice(id) {
     console.error(error);
   }
 
-  return data;
+  return CabinPriceSchema.parse(data);
 }
 
 export const getCabins = async function () {
@@ -46,11 +56,13 @@ export const getCabins = async function () {
     throw new Error("Cabins could not be loaded");
   }
 
-  return data;
+  const parseData = CabinSchema.array().parse(data);
+
+  return parseData;
 };
 
 // Guests are uniquely identified by their email address
-export async function getGuest(email) {
+export async function getGuest(email: string) {
   const { data, error } = await supabase
     .from("guests")
     .select("*")
@@ -58,10 +70,10 @@ export async function getGuest(email) {
     .single();
 
   // No error here! We handle the possibility of no guest in the sign in callback
-  return data;
+  return GuestSchema.parse(data);
 }
 
-export async function getBooking(id) {
+export async function getBooking(id: number) {
   const { data, error, count } = await supabase
     .from("bookings")
     .select("*")
@@ -76,7 +88,7 @@ export async function getBooking(id) {
   return data;
 }
 
-export async function getBookings(guestId) {
+export async function getBookings(guestId: number) {
   const { data, error, count } = await supabase
     .from("bookings")
     // We actually also need data on the cabins as well. But let's ONLY take the data that we actually need, in order to reduce downloaded data.
@@ -91,20 +103,20 @@ export async function getBookings(guestId) {
     throw new Error("Bookings could not get loaded");
   }
 
-  return data;
+  return BookingSchema.array().parse(data);
 }
 
-export async function getBookedDatesByCabinId(cabinId) {
-  let today = new Date();
+export async function getBookedDatesByCabinId(cabinId: number) {
+  const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
-  today = today.toISOString();
+  const todayISO = today.toISOString();
 
   // Getting all bookings
   const { data, error } = await supabase
     .from("bookings")
     .select("*")
     .eq("cabinId", cabinId)
-    .or(`startDate.gte.${today},status.eq.checked-in`);
+    .or(`startDate.gte.${todayISO},status.eq.checked-in`);
 
   if (error) {
     console.error(error);
@@ -121,7 +133,7 @@ export async function getBookedDatesByCabinId(cabinId) {
     })
     .flat();
 
-  return bookedDates;
+  return z.array(z.date()).parse(bookedDates);
 }
 
 export async function getSettings() {
@@ -181,7 +193,7 @@ export async function createBooking(newBooking) {
 // UPDATE
 
 // The updatedFields is an object which should ONLY contain the updated data
-export async function updateGuest(id, updatedFields) {
+export async function updateGuest(id: number, updatedFields) {
   const { data, error } = await supabase
     .from("guests")
     .update(updatedFields)
@@ -196,7 +208,7 @@ export async function updateGuest(id, updatedFields) {
   return data;
 }
 
-export async function updateBooking(id, updatedFields) {
+export async function updateBooking(id: number, updatedFields) {
   const { data, error } = await supabase
     .from("bookings")
     .update(updatedFields)
@@ -214,7 +226,7 @@ export async function updateBooking(id, updatedFields) {
 /////////////
 // DELETE
 
-export async function deleteBooking(id) {
+export async function deleteBooking(id: number) {
   const { data, error } = await supabase.from("bookings").delete().eq("id", id);
 
   if (error) {

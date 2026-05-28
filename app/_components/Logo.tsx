@@ -11,6 +11,7 @@ function Logo() {
         height="60"
         width="60"
         alt="The Wild Oasis logo"
+        priority
         quality={100}
       />
       <span className="text-xl font-semibold text-primary-100">
