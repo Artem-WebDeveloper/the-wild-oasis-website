@@ -1,9 +1,8 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CAPACITY_STATUSES } from "../_lib/constants";
 import { CapacityStatus } from "../_lib/schemas";
-import Link from "next/link";
 
 const FILTER_LABELS: Record<CapacityStatus, string> = {
   all: "All cabins",
@@ -15,32 +14,29 @@ const FILTER_LABELS: Record<CapacityStatus, string> = {
 function Filter() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const router = useRouter();
 
   const activeFilter = searchParams.get("capacity") ?? "all";
 
-  function getFilterHref(status: CapacityStatus) {
+  function handleFilter(status: CapacityStatus) {
     const params = new URLSearchParams(searchParams);
     params.set("capacity", status);
 
-    return `${pathname}?${params.toString()}`;
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }
 
   return (
     <div className="flex border border-primary-800">
       {CAPACITY_STATUSES.map((status) => {
-        const isActive = activeFilter === status;
         return (
-          <Link
-            href={getFilterHref(status)}
-            scroll={false}
-            className={`px-5 py-2 hover:bg-primary-700 ${isActive ? "pointer-events-none bg-primary-700 text-primary-50" : "text-primary-200"}`}
+          <button
+            className={`px-5 py-2 hover:bg-primary-700 ${activeFilter === status ? "bg-primary-700 text-primary-50" : ""}`}
             key={status}
-            // Убрать клавиатурный фокус при isActive
-            tabIndex={isActive ? -1 : undefined}
-            aria-disabled={isActive}
+            disabled={activeFilter === status}
+            onClick={() => handleFilter(status)}
           >
             {FILTER_LABELS[status]}
-          </Link>
+          </button>
         );
       })}
     </div>
