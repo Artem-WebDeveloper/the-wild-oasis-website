@@ -1,4 +1,5 @@
-import z, { email, number, string } from "zod";
+import z from "zod";
+import { CAPACITY_STATUSES } from "./constants";
 
 export const CabinSchema = z.object({
   discount: z.number().catch(0),
@@ -61,3 +62,12 @@ export const BookingSchema = z.object({
 export type Booking = z.infer<typeof BookingSchema>;
 
 export const SettingsSchema = z.object({});
+
+export type CapacityStatus = (typeof CAPACITY_STATUSES)[number];
+
+export function validateCapacity(
+  value: string | undefined,
+): value is CapacityStatus {
+  if (value === undefined) return false;
+  return CAPACITY_STATUSES.some((val) => val === value);
+}

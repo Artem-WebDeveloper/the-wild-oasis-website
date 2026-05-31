@@ -1,6 +1,7 @@
-import { getCabin, getCabins } from "@/app/_lib/data-service";
-import { EyeSlashIcon, MapPinIcon, UsersIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
+import { EyeSlashIcon, MapPinIcon, UsersIcon } from "@heroicons/react/24/solid";
+import TextExpander from "@/app/_components/TextExpander";
+import { getCabin, getCabins } from "@/app/_lib/data-service";
 
 /* 
 export const metadata = {
@@ -57,7 +58,9 @@ export default async function Page({
             Cabin {name}
           </h3>
 
-          <p className="mb-10 text-lg text-primary-300">{description}</p>
+          <p className="mb-10 text-lg text-primary-300">
+            <TextExpander>{description}</TextExpander>
+          </p>
 
           <ul className="mb-7 flex flex-col gap-4">
             <li className="flex items-center gap-3">
