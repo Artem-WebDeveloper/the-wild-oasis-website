@@ -6,7 +6,9 @@ import {
   CabinDetailSchema,
   CabinPriceSchema,
   CabinSchema,
+  CountryFormSchema,
   GuestSchema,
+  SettingSchema,
 } from "./schemas";
 import z from "zod";
 
@@ -138,22 +140,28 @@ export async function getBookedDatesByCabinId(cabinId: number) {
 
 export async function getSettings() {
   const { data, error } = await supabase.from("settings").select("*").single();
-
+  // await new Promise((res) => setTimeout(res, 3000));
   if (error) {
     console.error(error);
     throw new Error("Settings could not be loaded");
   }
 
-  return data;
+  return SettingSchema.parse(data);
 }
 
 export async function getCountries() {
   try {
     const res = await fetch(
       "https://restcountries.com/v2/all?fields=name,flag",
+      { signal: AbortSignal.timeout(30_000) },
     );
+
+    if (!res.ok) throw new Error("Could not fetch countries");
     const countries = await res.json();
-    return countries;
+
+    console.log(countries);
+
+    return CountryFormSchema.array().parse(countries);
   } catch {
     throw new Error("Could not fetch countries");
   }
@@ -235,3 +243,74 @@ export async function deleteBooking(id: number) {
   }
   return data;
 }
+
+// Countries MOCK
+/* 
+const countries = [
+  {
+    name: "Burkina Faso",
+    flag: "https://flagcdn.com/bf.svg",
+    independent: false,
+  },
+  {
+    name: "Burundi",
+    flag: "https://flagcdn.com/bi.svg",
+    independent: false,
+  },
+  {
+    name: "Cambodia",
+    flag: "https://flagcdn.com/kh.svg",
+    independent: false,
+  },
+  {
+    name: "Cameroon",
+    flag: "https://flagcdn.com/cm.svg",
+    independent: false,
+  },
+  {
+    name: "Canada",
+    flag: "https://flagcdn.com/ca.svg",
+    independent: false,
+  },
+  {
+    name: "Cabo Verde",
+    flag: "https://flagcdn.com/cv.svg",
+    independent: false,
+  },
+  {
+    name: "Cayman Islands",
+    flag: "https://flagcdn.com/ky.svg",
+    independent: false,
+  },
+  {
+    name: "Central African Republic",
+    flag: "https://flagcdn.com/cf.svg",
+    independent: false,
+  },
+  {
+    name: "Chad",
+    flag: "https://flagcdn.com/td.svg",
+    independent: false,
+  },
+  {
+    name: "Chile",
+    flag: "https://flagcdn.com/cl.svg",
+    independent: false,
+  },
+  {
+    name: "China",
+    flag: "https://flagcdn.com/cn.svg",
+    independent: false,
+  },
+  {
+    name: "Christmas Island",
+    flag: "https://flagcdn.com/cx.svg",
+    independent: false,
+  },
+  {
+    name: "Cocos (Keeling) Islands",
+    flag: "https://flagcdn.com/cc.svg",
+    independent: false,
+  },
+];
+*/

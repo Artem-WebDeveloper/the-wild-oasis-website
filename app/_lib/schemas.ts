@@ -71,3 +71,20 @@ export function validateCapacity(
   if (value === undefined) return false;
   return CAPACITY_STATUSES.some((val) => val === value);
 }
+
+export const CountryFormSchema = z.object({
+  name: z.string(),
+  flag: z.string(),
+  independent: z.boolean(),
+});
+
+export type CountryForm = z.infer<typeof CountryFormSchema>;
+
+export const SettingSchema = z.object({
+  breakfastPrice: z.number(),
+  maxBookingLength: z.number(),
+  maxGuestsPerBooking: z.number(),
+  minBookingLength: z.number(),
+});
+
+export type Settings = z.infer<typeof SettingSchema>;

@@ -3,6 +3,7 @@ import CabinList from "../_components/CabinList";
 import Spinner from "../_components/Spinner";
 import { validateCapacity } from "../_lib/schemas";
 import Filter from "../_components/Filter";
+import ReservationReminder from "../_components/ReservationReminder";
 
 export const revalidate = 3600;
 // export const revalidate = 15;
@@ -17,7 +18,6 @@ type PageProps = {
 
 export default async function Page({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
-  console.log(resolvedSearchParams);
 
   const filter = validateCapacity(resolvedSearchParams?.capacity)
     ? resolvedSearchParams.capacity
@@ -43,6 +43,7 @@ export default async function Page({ searchParams }: PageProps) {
 
       <Suspense fallback={<Spinner />} key={filter}>
         <CabinList filter={filter} />
+        <ReservationReminder />
       </Suspense>
     </div>
   );
