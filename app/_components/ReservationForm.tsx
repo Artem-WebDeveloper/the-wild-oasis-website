@@ -1,9 +1,16 @@
 "use client";
 
+import type { Session } from "next-auth";
 import { useReservation } from "../_contexts/ReservarionContext";
 import { CabinDetail } from "../_lib/schemas";
+import Image from "next/image";
 
-function ReservationForm({ cabin }: { cabin: CabinDetail }) {
+type ReservationFormProps = {
+  cabin: CabinDetail;
+  user: NonNullable<Session["user"]>;
+};
+
+function ReservationForm({ cabin, user }: ReservationFormProps) {
   const { range } = useReservation();
   const { maxCapacity } = cabin;
 
@@ -12,21 +19,22 @@ function ReservationForm({ cabin }: { cabin: CabinDetail }) {
       <div className="flex items-center justify-between bg-primary-800 px-16 py-2 text-primary-300">
         <p>Logged in as</p>
 
-        {/* <div className='flex gap-4 items-center'>
-          <img
-            // Important to display google profile images
-            referrerPolicy='no-referrer'
-            className='h-8 rounded-full'
-            src={user.image}
-            alt={user.name}
-          />
+        <div className="flex items-center gap-4">
+          {user.name && user.image && (
+            <Image
+              // Important to display google profile images
+              referrerPolicy="no-referrer"
+              unoptimized
+              className="h-8 rounded-full"
+              width={32}
+              height={32}
+              src={user.image}
+              alt={user.name}
+            />
+          )}
           <p>{user.name}</p>
-        </div> */}
+        </div>
       </div>
-
-      <p>
-        {String(range?.from)} to {String(range?.to)}
-      </p>
 
       <form className="flex flex-col gap-5 bg-primary-900 px-16 py-10 text-lg">
         <div className="space-y-2">

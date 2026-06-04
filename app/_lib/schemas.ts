@@ -32,13 +32,13 @@ export const CabinPriceSchema = CabinSchema.pick({
 });
 
 export const GuestSchema = z.object({
-  countryFlag: z.string(),
+  countryFlag: z.string().nullable(),
   created_at: z.string(),
   email: z.string(),
   fullName: z.string(),
   id: z.number(),
-  nationalID: z.string(),
-  nationality: z.string(),
+  nationalID: z.string().nullable(),
+  nationality: z.string().nullable(),
 });
 
 export type Guest = z.infer<typeof GuestSchema>;
