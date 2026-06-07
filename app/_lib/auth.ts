@@ -60,3 +60,9 @@ export const {
   signOut,
   handlers: { GET, POST },
 } = NextAuth(authConfig);
+
+export async function getAuthEmail() {
+  const session = await auth();
+  if (!session?.user?.email) throw new Error("Unauthorized");
+  return session.user.email;
+}

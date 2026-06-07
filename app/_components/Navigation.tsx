@@ -4,7 +4,6 @@ import { auth } from "../_lib/auth";
 
 export default async function Navigation() {
   const session = await auth();
-  console.log(session);
 
   return (
     <nav className="z-10 text-xl">

@@ -72,6 +72,7 @@ export async function getGuest(email: string) {
     .single();
 
   if (!data) return null;
+
   return GuestSchema.parse(data);
 }
 
@@ -159,8 +160,6 @@ export async function getCountries() {
     if (!res.ok) throw new Error("Could not fetch countries");
     const countries = await res.json();
 
-    console.log(countries);
-
     return CountryFormSchema.array().parse(countries);
   } catch {
     throw new Error("Could not fetch countries");
@@ -202,7 +201,7 @@ export async function createBooking(newBooking) {
 
 /////////////
 // UPDATE
-
+/* 
 // The updatedFields is an object which should ONLY contain the updated data
 export async function updateGuest(id: number, updatedFields) {
   const { data, error } = await supabase
@@ -246,6 +245,7 @@ export async function deleteBooking(id: number) {
   }
   return data;
 }
+*/
 
 // Countries MOCK
 /* 
