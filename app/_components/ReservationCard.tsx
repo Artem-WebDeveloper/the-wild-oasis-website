@@ -15,6 +15,7 @@ function ReservationCard({ booking }: { booking: Booking }) {
     id,
     startDate,
     endDate,
+    cabinId,
     numNights,
     totalPrice,
     numGuests,

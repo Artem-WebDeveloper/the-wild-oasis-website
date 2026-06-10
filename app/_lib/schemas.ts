@@ -1,6 +1,8 @@
 import z from "zod";
 import { CAPACITY_STATUSES } from "./constants";
 
+const BOOKING_STATUSES = ["checked-out", "checked-in", "unconfirmed"] as const;
+
 export const CabinSchema = z.object({
   discount: z.number().catch(0),
   id: z.number(),
@@ -60,6 +62,19 @@ export const BookingSchema = z.object({
 });
 
 export type Booking = z.infer<typeof BookingSchema>;
+
+export const BookingDetailSchema = BookingSchema.omit({
+  cabins: true,
+}).extend({
+  cabinPrice: z.number(),
+  extrasPrice: z.number(),
+  hasBreakfast: z.boolean(),
+  isPaid: z.boolean(),
+  status: z.enum(BOOKING_STATUSES).catch("unconfirmed"),
+  observations: z.string().catch(""),
+});
+
+export type BookingDetail = z.infer<typeof BookingDetailSchema>;
 
 export const SettingsSchema = z.object({});
 

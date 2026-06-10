@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { eachDayOfInterval } from "date-fns";
 import { supabase } from "./supabase";
 import {
+  BookingDetailSchema,
   BookingSchema,
   CabinDetailSchema,
   CabinPriceSchema,
@@ -88,7 +89,7 @@ export async function getBooking(id: number) {
     throw new Error("Booking could not get loaded");
   }
 
-  return data;
+  return BookingDetailSchema.parse(data);
 }
 
 export async function getBookings(guestId: number) {

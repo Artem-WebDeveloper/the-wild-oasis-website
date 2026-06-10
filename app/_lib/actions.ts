@@ -1,5 +1,5 @@
 "use server";
-
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
 import { supabase } from "./supabase";
@@ -58,6 +58,50 @@ export async function deleteReservation(bookingId: number) {
   }
 
   revalidatePath("/account/reservations");
+}
+
+export async function updateBooking(formData: FormData) {
+  const reservationId = formData.get("reservationId");
+  // 1. Аутентификация
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
+
+  // 2. Авторизация
+  const guestBookings = await getBookings(session.user.guestId);
+  const guestBookingsIds = guestBookings.map((booking) => booking.id);
+
+  if (!guestBookingsIds.includes(Number(reservationId))) {
+    throw new Error("You are not allowed to update this booking");
+  }
+
+  // 3. Получение обновленных данных
+  const observations = formData.get("observations")?.slice(0, 1000);
+  const numGuests = formData.get("numGuests");
+
+  if (
+    typeof reservationId !== "string" ||
+    typeof observations !== "string" ||
+    typeof numGuests !== "string"
+  ) {
+    throw new Error("Invalid form data");
+  }
+
+  // 4. Мутация
+  const { error } = await supabase
+    .from("bookings")
+    .update({ observations, numGuests: Number(numGuests) })
+    .eq("id", Number(reservationId))
+    .select()
+    .single();
+
+  // 5. Обработка ошибок
+  if (error) {
+    console.error(error);
+    throw new Error("Booking could not be updated");
+  }
+
+  // 6. Перенаправление на другую страницу
+  redirect("/account/reservations");
 }
 
 export async function signInAction() {
