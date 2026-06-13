@@ -103,3 +103,13 @@ export const SettingSchema = z.object({
 });
 
 export type Settings = z.infer<typeof SettingSchema>;
+
+export const createBookingSchema = z.object({
+  startDate: z.date(),
+  endDate: z.date(),
+  numNights: z.number().positive().int(),
+  cabinPrice: z.number(),
+  cabinId: z.number().int().positive(),
+  numGuests: z.coerce.number().positive().int(),
+  observations: z.string().max(1000).catch(""),
+});

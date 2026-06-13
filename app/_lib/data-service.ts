@@ -184,7 +184,7 @@ export async function createGuest(newGuest: {
   return data;
 }
 
-export async function createBooking(newBooking) {
+/* export async function createBooking(newBooking) {
   const { data, error } = await supabase
     .from("bookings")
     .insert([newBooking])
@@ -198,7 +198,7 @@ export async function createBooking(newBooking) {
   }
 
   return data;
-}
+} */
 
 /////////////
 // UPDATE
@@ -246,75 +246,4 @@ export async function deleteBooking(id: number) {
   }
   return data;
 }
-*/
-
-// Countries MOCK
-/* 
-const countries = [
-  {
-    name: "Burkina Faso",
-    flag: "https://flagcdn.com/bf.svg",
-    independent: false,
-  },
-  {
-    name: "Burundi",
-    flag: "https://flagcdn.com/bi.svg",
-    independent: false,
-  },
-  {
-    name: "Cambodia",
-    flag: "https://flagcdn.com/kh.svg",
-    independent: false,
-  },
-  {
-    name: "Cameroon",
-    flag: "https://flagcdn.com/cm.svg",
-    independent: false,
-  },
-  {
-    name: "Canada",
-    flag: "https://flagcdn.com/ca.svg",
-    independent: false,
-  },
-  {
-    name: "Cabo Verde",
-    flag: "https://flagcdn.com/cv.svg",
-    independent: false,
-  },
-  {
-    name: "Cayman Islands",
-    flag: "https://flagcdn.com/ky.svg",
-    independent: false,
-  },
-  {
-    name: "Central African Republic",
-    flag: "https://flagcdn.com/cf.svg",
-    independent: false,
-  },
-  {
-    name: "Chad",
-    flag: "https://flagcdn.com/td.svg",
-    independent: false,
-  },
-  {
-    name: "Chile",
-    flag: "https://flagcdn.com/cl.svg",
-    independent: false,
-  },
-  {
-    name: "China",
-    flag: "https://flagcdn.com/cn.svg",
-    independent: false,
-  },
-  {
-    name: "Christmas Island",
-    flag: "https://flagcdn.com/cx.svg",
-    independent: false,
-  },
-  {
-    name: "Cocos (Keeling) Islands",
-    flag: "https://flagcdn.com/cc.svg",
-    independent: false,
-  },
-];
 */

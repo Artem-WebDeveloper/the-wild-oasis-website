@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
 import { supabase } from "./supabase";
 import { getBookings } from "./data-service";
+import { createBookingSchema } from "./schemas";
 
 export async function updateGuest(formData: FormData) {
   const session = await auth();
@@ -36,7 +37,53 @@ export async function updateGuest(formData: FormData) {
   revalidatePath("/account/profile");
 }
 
-export async function deleteReservation(bookingId: number) {
+type BookingBindData = {
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  numNights: number;
+  cabinPrice: number;
+  cabinId: number;
+};
+
+export async function createBooking(
+  bookingData: BookingBindData,
+  formData: FormData,
+) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
+
+  // Валидация вычисляемых данных и формы
+  const parsed = createBookingSchema.safeParse({
+    ...bookingData,
+    numGuests: formData.get("numGuests"),
+    observations: formData.get("observations"),
+  });
+
+  if (!parsed.success) throw new Error("Invalid Create cabin data!");
+
+  const newBooking = {
+    ...parsed.data,
+
+    guestId: session.user.guestId,
+    extrasPrice: 0,
+    totalPrice: parsed.data.cabinPrice,
+    isPaid: false,
+    hasBreakfast: false,
+    status: "unconfirmed",
+  };
+
+  const { error } = await supabase.from("bookings").insert([newBooking]);
+
+  if (error) {
+    throw new Error("Booking could not be created");
+  }
+
+  revalidatePath(`/cabins/${parsed.data.cabinId}`);
+
+  redirect("/cabins/thankyou");
+}
+
+export async function deleteBooking(bookingId: number) {
   const session = await auth();
   if (!session) throw new Error("You must be logged in");
 
